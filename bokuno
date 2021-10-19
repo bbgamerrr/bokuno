@@ -1,0 +1,455 @@
+if game.CoreGui:FindFirstChild("FluxLib") then
+    game.CoreGui:FindFirstChild("FluxLib"):Destroy()
+end
+local Flux = loadstring(game:HttpGet"https://pastebin.com/raw/XLCrin0T")()
+local win = Flux:Window("Zero Hub", "Boku No Roblox: Remastered",getgenv().Color, Enum.KeyCode.RightControl)
+local Main = win:Tab("Main Tab","http://www.roblox.com/asset/?id=6022668888")
+local LocalPlayer = win:Tab("LocalPlayer Tab","http://www.roblox.com/asset/?id=6022668888")
+local Setting = win:Tab("Setting Tab","http://www.roblox.com/asset/?id=6022668888")
+local Players = win:Tab("Players Tab","http://www.roblox.com/asset/?id=6022668888")
+
+----- Variable > < -----
+local Plr = game:GetService("Players").LocalPlayer
+local Remote = game:GetService("ReplicatedStorage").Remotes
+local tween = nil
+local Rotate = 90
+local RotateX = 90
+local Playersinsert = {}
+local SaveSetting = {
+    ["Farm"] = false,
+    ["AutoSkill"] = false,
+    ["StatAgility"] = false,
+    ["StatStrength"] = false,
+    ["StatDurability"] = false,
+    ["AttackPlayers"] = false,
+    ["SpecterPlayers"] = false,
+    ["PlayersTeleport"] = false,
+    ["Invisblemobe"] = false,
+    ["Gym"] = false,
+    ["Train"] = false,
+    ["Hide Name"] = false,
+----------------------------
+    ["SelectMon"] = "",
+    ["SelectPlayer"] = "",
+    ["SelectType"] = "Boss",
+    ["SelectTypeMon"] = "",
+    ["Setting Skill"] = {
+        ["Z"] = false,
+        ["X"] = false,
+        ["C"] = false,
+        ["V"] = false,
+        ["Q"] = false,
+        ["B"] = false,
+    },
+    ["Distance"] = 240,
+    ["DistanceX"] = 240,
+    ["TweenSpeed"] = 555,
+};
+local skillcheck = SaveSetting["Setting Skill"]
+for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+    if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+        table.insert(Playersinsert, v.Name)
+    end
+end
+----- Table / 1 --------
+local allmob = {
+    ["Boss"] = {
+        ["Villain"] = {
+            "Tomura",
+            "Muscular",
+            "Overhaul",
+            "Dabi",
+            "Noumu",
+            "AllForOne",
+            "Awakened Tomura",
+            "Gigantomachia"
+        },
+        ["Hero"] = {
+            "Mount Lady",
+            "Endeavor",
+            "Midnight",
+            "Present Mic",
+            "Gang Orca",
+            "All Might 1",
+            "Hawks",
+            "Deku",
+        }
+    },
+    ["Normal Mob"] = {
+        ["Villain"] = {
+            "Criminal",
+            "Weak Villain",
+            "Villain",
+            "Weak Nomu",
+            "High End"
+        },
+        ["Hero"] = {
+            "Police",
+            "UA Student",
+            "Hero",
+            "Forest Beast",
+        }
+    }
+}
+------ Main Tab ------
+local refmon = Main:Dropdown("Select Monster",{"Select Type First"},function(value)
+    SaveSetting["SelectMon"] = value
+end)
+Main:Dropdown("Select Type",{"Boss","Normal Mob"},function(value)
+    SaveSetting["SelectType"] = value
+    refmon:Clear()
+    if #SaveSetting["SelectTypeMon"] >= 1 then
+        for i,v in pairs(allmob[SaveSetting["SelectType"]][SaveSetting["SelectTypeMon"]]) do
+            refmon:Add(v)
+        end
+    else
+        refmon:Add("Select V/H")
+    end
+    
+end)
+Main:Dropdown("Select V/H",{"Villain","Hero"},function(value)
+    SaveSetting["SelectTypeMon"] = value
+        refmon:Clear()
+    for i,v in pairs(allmob[SaveSetting["SelectType"]][SaveSetting["SelectTypeMon"]]) do
+        refmon:Add(v)
+    end
+end)
+Main:Toggle("Auto Farm","",false,function(value)
+    SaveSetting["Farm"] = value 
+end)
+Main:Line()
+--------------- LocalPlayer -------------
+LocalPlayer:Toggle("Invisble Mobe","",false,function(value)
+    SaveSetting["Invisblemobe"] = value 
+end)
+LocalPlayer:Toggle("Gym Farm","",false,function(value)
+    SaveSetting["Gym"] = value 
+end)
+LocalPlayer:Toggle("Train","",false,function(value)
+    SaveSetting["Train"] = value 
+end)
+LocalPlayer:Line()
+LocalPlayer:Toggle("Agility","",false,function(value)
+    SaveSetting["StatAgility"] = value 
+end)
+LocalPlayer:Toggle("Strength","",false,function(value)
+    SaveSetting["StatStrength"] = value 
+end)
+LocalPlayer:Toggle("Durability","",false,function(value)
+    SaveSetting["StatDurability"] = value 
+end)
+LocalPlayer:Line()
+--------------- Setting Farm -------------
+Setting:Slider("Distance\n[in Farm]","",-50,350,250,function(Value)
+    SaveSetting["Distance"] = Value
+end)
+Setting:Line()
+Setting:Slider("Distance\n[in Teleport Players]","",-50,350,250,function(Value)
+    SaveSetting["Distance"] = Value
+end)
+Setting:Line()
+Setting:Slider("Speed Tween","",100,500,250,function(Value) 
+    SaveSetting["TweenSpeed"] = Value
+end)
+Setting:Line()
+Setting:Toggle("Skill Z","",false,function(value)
+    skillcheck["Z"] = value 
+end)
+Setting:Toggle("Skill X","",false,function(value)
+    skillcheck["X"] = value 
+end)
+Setting:Toggle("Skill C","",false,function(value)
+    skillcheck["C"] = value 
+end)
+Setting:Toggle("Skill V","",false,function(value)
+    skillcheck["V"] = value 
+end)
+Setting:Toggle("Skill Q","",false,function(value)
+    skillcheck["Q"] = value 
+end)
+Setting:Toggle("Skill B","",false,function(value)
+    skillcheck["B"] = value 
+end)
+Setting:Line()
+
+
+---------------- Players ---------------
+
+local refplayer = Players:Dropdown("Select Player",Playersinsert,function(value)
+    SaveSetting["SelectPlayer"] = value
+end)
+Players:Button("Refesh","",function ()
+    refplayer:Clear()
+        for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+            if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+            refplayer:Add(v.Name)
+        end
+    end
+end)
+Players:Toggle("Specter Player","",SaveSetting["SpecterPlayers"],function(value)
+    SaveSetting["SpecterPlayers"] = value 
+end)
+Players:Toggle("Teleport Player","",SaveSetting["PlayersTeleport"],function(value)
+    SaveSetting["PlayersTeleport"] = value 
+end)
+Players:Toggle("Attack Player","",SaveSetting["AttackPlayers"],function(value)
+    SaveSetting["AttackPlayers"] = value 
+end)
+---------------- Function ---------------
+local function toTarget(pos, targetPos, targetCFrame)
+    local tween_s = game:service"TweenService"
+    local info = TweenInfo.new((targetPos - pos).Magnitude/SaveSetting["TweenSpeed"] , Enum.EasingStyle.Linear)
+    local tic_k = tick()
+    local tween, err = pcall(function()
+        tween = tween_s:Create(Plr.Character["HumanoidRootPart"], info, {CFrame = targetCFrame})
+        tween:Play()
+        end)
+    if not tween then return err end
+end
+local function skill(skilluse)
+    game:GetService("VirtualInputManager"):SendKeyEvent(true,skilluse,false,Plr.Character.HumanoidRootPart)
+    wait()
+    game:GetService("VirtualInputManager"):SendKeyEvent(false,skilluse,false,Plr.Character.HumanoidRootPart)
+end
+local function skillUse()
+    if skillcheck["Z"] then
+        skill("Z")
+    end
+    if skillcheck["X"] then
+        skill("X")
+    end
+    if skillcheck["C"] then
+        skill("C")
+    end
+    if skillcheck["V"] then
+        skill("V")
+    end
+    if skillcheck["Q"] then
+        skill("Q")
+    end
+    if skillcheck["B"] then
+        skill("B")
+    end
+end
+------------- Spawn Function ------------
+spawn(function ()
+    while true do
+        pcall(function ()
+            if SaveSetting["Distance"] >= -50 and SaveSetting["Distance"] < 5 then
+                Rotate = 90
+            elseif SaveSetting["Distance"] >= 5 and SaveSetting["Distance"] < math.huge then
+                Rotate = -90
+            end
+        end)
+        wait()
+    end
+end)
+spawn(function ()
+    while true do
+        pcall(function ()
+            if SaveSetting["DistanceX"] >= -50 and SaveSetting["DistanceX"] < 5 then
+                RotateX = 90
+            elseif SaveSetting["DistanceX"] >= 5 and SaveSetting["DistanceX"] < math.huge then
+                RotateX = -90
+            end
+        end)
+        wait()
+    end
+end)
+spawn(function ()
+    while true do
+        if SaveSetting["StatAgility"] then
+            pcall(function ()
+                Remote.Agility:FireServer(1);
+            end)
+        end
+        if SaveSetting["StatStrength"] then
+            pcall(function ()
+                Remote.Strength:FireServer(1);
+            end)
+        end
+        if SaveSetting["StatDurability"] then
+            pcall(function ()
+                Remote.Durability:FireServer(1);
+            end)
+        end
+        wait()
+    end
+end)
+spawn(function()
+    while true do wait()
+        if SaveSetting["Farm"] then
+            pcall(function()
+                for i,v in pairs(game:GetService("Workspace").NPCs:GetChildren()) do
+                    if string.find(v.Name, SaveSetting["SelectMon"]) then
+                        repeat wait()
+                            skillUse()
+                            Plr.Character.Main.Swing:FireServer(v.HumanoidRootPart.CFrame)
+                            toTarget(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position,CFrame.new(v.HumanoidRootPart.Position+Vector3.new(0,SaveSetting["Distance"],0)) * CFrame.fromAxisAngle(Vector3.new(1,0,0), math.rad(Rotate)))
+                        until v.Humanoid.Health == 0 or SaveSetting["Farm"] == false
+                        if not SaveSetting["Farm"] then
+                            return
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+spawn(function ()
+    while true do
+        if SaveSetting["SpecterPlayers"] then
+            pcall(function ()
+                for i,v in pairs(game.Workspace:GetChildren()) do
+                    if v.Name ==  SaveSetting["SelectPlayer"] then
+                        game:GetService("Workspace").Camera.CameraSubject = v.Humanoid
+                    end
+                end
+            end) 
+        elseif SaveSetting["SpecterPlayers"] == false then
+            pcall(function()
+                game:GetService("Workspace").Camera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+            end)
+        end
+        wait(2.5)
+    end
+end)
+
+spawn(function ()
+    while true do
+        if SaveSetting["Gym"] then
+            pcall(function ()
+                for i,v in pairs(game:GetService("Workspace")["Punching Bags"]:GetDescendants()) do
+                    if v:FindFirstChild("HumanoidRootPart") then
+                        repeat 
+                            wait()
+                            skill("E")
+                                    toTarget(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position,CFrame.new(v.HumanoidRootPart.Position+Vector3.new(0,-2,0)) * CFrame.fromAxisAngle(Vector3.new(1,0,0), math.rad(-90)))
+                                until not SaveSetting["Gym"]
+                            if not SaveSetting["Gym"]  then
+                                return
+                            end
+                        end
+                    end
+                end)   
+            end
+        wait()
+    end
+end)
+spawn(function ()
+    while true do
+        if SaveSetting["Train"] then
+            pcall(function ()
+                skill("T")
+                end)
+            end
+        wait()
+    end
+end)
+spawn(function ()
+    while true do
+        if SaveSetting["PlayersTeleport"]  then
+            pcall(function ()
+                for i,v in pairs(game.Workspace:GetChildren()) do
+                    if v.Name == SaveSetting["SelectPlayer"] then
+                        repeat
+                            wait()
+                            skillUse()
+                            Plr.Character.Main.Swing:FireServer(v.HumanoidRootPart.CFrame)
+                            toTarget(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position,v.HumanoidRootPart.Position,CFrame.new(v.HumanoidRootPart.Position+Vector3.new(0,SaveSetting["DistanceX"],0)) * CFrame.fromAxisAngle(Vector3.new(1,0,0), math.rad(RotateX)))
+                        until v.Humanoid.Health <= 0 or not SaveSetting["PlayersTeleport"] 
+                        if not SaveSetting["PlayersTeleport"] then
+                            return
+                        end
+                    end
+                end
+            end)
+        end
+        wait()
+    end
+end)
+spawn(function ()
+    while true do
+        wait()
+        if SaveSetting["AttackPlayers"]  then
+            pcall(function ()
+                for i,v in pairs(game.Workspace:GetChildren()) do
+                    if v.Name ==  SaveSetting["SelectPlayer"] then
+                        repeat
+                            wait()
+                            game:GetService("Players").LocalPlayer.Character.Main.Swing:FireServer(v.HumanoidRootPart.CFrame)
+                        until v.Humanoid.Health <= 0 or not SaveSetting["AttackPlayers"]
+                    end
+                end
+            end)
+        end
+    end
+end)
+spawn(function()
+    while true do wait()
+        if SaveSetting["Hide Name"] then
+            pcall(function ()
+                if game.Players.LocalPlayer.Character.Head:FindFirstChild("OverHead") then
+                    game.Players.LocalPlayer.Character.Head:FindFirstChild("OverHead"):Destroy()
+                wait(1)
+                end
+            end)
+        end
+    end
+end)
+spawn(function ()
+    while true do
+        if SaveSetting["Invisblemobe"]  then
+            pcall(function ()
+                if Plr.Character:FindFirstChild("LowerTorso") then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =  CFrame.new(-1039.3807373047, 332.60693359375, 156.67474365234)
+                        Plr.Character:FindFirstChild("LowerTorso"):Destroy() 
+                    end
+                end)
+            end
+        wait()
+    end
+end)
+
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local AntiAutoClick = LocalPlayer.PlayerGui.SaveGui.AntiAutoClick
+local TextMatch = {"Red","Orange","Yellow","Green","Blue"}
+local VirtualUser = game:GetService("VirtualUser")
+
+
+    if LocalPlayer.PlayerGui:FindFirstChild("SaveGui") then
+        AntiAutoClick = LocalPlayer.PlayerGui.SaveGui.AntiAutoClick
+    end
+
+spawn(function()
+    while wait() do
+        AntiAutoClick:GetPropertyChangedSignal("Visible"):Connect(function()
+            if AntiAutoClick.Visible == true then
+                wait(0.1)
+                    local Color
+                    for i,v in pairs(TextMatch) do
+                        if string.match(AntiAutoClick.TextFrame.ColorIndicator.Text,v) then
+                            Color = v
+                        end
+                    end
+                    for i,v in pairs(AntiAutoClick.Colors:GetChildren()) do
+                        if v.Button.Text == Color:sub(1,1) then
+                            firesignal(v.Button.MouseButton1Click)
+                        end
+                    end
+                end
+            end) 
+            LocalPlayer.Idled:connect(function()
+            VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+            wait(1)
+            VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+        end)
+    end
+end)
+game:GetService('RunService').Stepped:connect(function()
+    if SaveSetting["Farm"] or SaveSetting["Gym"] or SaveSetting["PlayersTeleport"] then
+        pcall(function()
+            Plr.Character.Humanoid:ChangeState(11)
+        end)
+    end
+end)
